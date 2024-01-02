@@ -1,13 +1,15 @@
-function [U] = LSNMF(A, k, maxiter)
+A = csvread('Karate.csv', 1, 1);
 
-[n, m] = size(A);
+[node_layer] = onion_shell(A);
+[S] = layer_similarity(A, node_layer);
+lambda = 0.1;
+J = A + lambda*S;
+J = scale01(J);
+[U] = NMF(J, 3, 500);
 
-U = rand(n, k);
+disp(U);
 
-for i = 1:maxiter
-
-    U = U .* ( A * U) ./ max(U * (U' * U) , 1e-10);
-
+function y = scale01(x)
+  y = x - min(min(x)) + eps;
+  y = y/max(max(y));
 end
-
-
